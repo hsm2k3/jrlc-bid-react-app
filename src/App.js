@@ -1,170 +1,72 @@
 import './App.css';
-import { Nav, Accordion, Card, Button } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
+import BiddingTabContent from './BiddingTabContent';
+import InputBidForm from './InputBidForm';
 
 function App() {
+  const [selectedTab, updateSelectedTab] = useState(undefined);
+  const [inputBidFormProps, updateInputBidFormProps] = useState({ show: false, biddingItem: {}, selectedDay: '' });
+  const [data, updateData] = useState([]);
   useEffect(() => {
-    //TODO:: Fetch data
+    const returnedData = [
+      {
+        key: 'rh1', title: 'Rosh Hashanah Day 1', biddingItems: [
+          { key: 'rh1-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 10, details: 'Any details for opening the ark?' },
+          { key: 'rh1-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 20, details: 'Any details for the first aliyah?' },
+          { key: 'rh1-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 30, details: 'Any details for the second aliyah?' },
+          { key: 'rh1-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 40, details: 'Any details for the third aliyah?' },
+        ]
+      },
+      {
+        key: 'rh2', title: 'Rosh Hashanah Day 2', biddingItems: [
+          { key: 'rh2-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 40, details: 'Any details for opening the ark?' },
+          { key: 'rh2-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 30, details: 'Any details for the first aliyah?' },
+          { key: 'rh2-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 20, details: 'Any details for the second aliyah?' },
+          { key: 'rh2-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 10, details: 'Any details for the third aliyah?' },
+        ]
+      },
+      {
+        key: 'yk', title: 'Yom Kippur', biddingItems: [
+          { key: 'yk-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 10, details: 'Any details for opening the ark?' },
+          { key: 'yk-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 40, details: 'Any details for the first aliyah?' },
+          { key: 'yk-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 20, details: 'Any details for the second aliyah?' },
+          { key: 'yk-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 30, details: 'Any details for the third aliyah?' },
+        ]
+      },
+    ]
+    updateData(returnedData)
+    updateSelectedTab(returnedData[0]?.key);
   }, []);
 
-  const [selectedTab, updateSelectedTab] = useState("rh1");
-  let pageToRender = null;
-  switch (selectedTab) {
-    case 'rh1':
-      pageToRender = <Accordion defaultActiveKey="0">
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="0">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>RH 1: Opening the ark</div><div>Current highest bid: $18.00</div></div>
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="0">
-            <Card.Body><div>Any needed details for opening the ark?</div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="1">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>First aliyah</div><div>Current highest bid: $36.00</div></div>
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="1">
-            <Card.Body><div>Any needed details for first aliyah?</div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="2">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Second aliyah</div><div>Current highest bid: $54.00</div></div>
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="2">
-            <Card.Body><div>Any needed details for second aliyah?</div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-        <Card>
-          <Accordion.Toggle as={Card.Header} eventKey="3">
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Third aliyah</div><div>Current highest bid: $72.00</div></div>
-          </Accordion.Toggle>
-          <Accordion.Collapse eventKey="3">
-            <Card.Body><div>Any needed details for third aliyah?</div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-            </Card.Body>
-          </Accordion.Collapse>
-        </Card>
-      </Accordion>;
-      break;
-    case 'rh2':
-      pageToRender = <Accordion defaultActiveKey="0">
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="0">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>RH 2: Opening the ark</div><div>Current highest bid: $72.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="0">
-          <Card.Body><div>Any needed details for opening the ark?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="1">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>First aliyah</div><div>Current highest bid: $54.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="1">
-          <Card.Body><div>Any needed details for first aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="2">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Second aliyah</div><div>Current highest bid: $36.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="2">
-          <Card.Body><div>Any needed details for second aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="3">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Third aliyah</div><div>Current highest bid: $18.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="3">
-          <Card.Body><div>Any needed details for third aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-    </Accordion>;
-      break;
-    case 'yk':
-      pageToRender = <Accordion defaultActiveKey="0">
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="0">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>YK: Opening the ark</div><div>Current highest bid: $18.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="0">
-          <Card.Body><div>Any needed details for opening the ark?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="1">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>First aliyah</div><div>Current highest bid: $72.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="1">
-          <Card.Body><div>Any needed details for first aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="2">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Second aliyah</div><div>Current highest bid: $36.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="2">
-          <Card.Body><div>Any needed details for second aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-      <Card>
-        <Accordion.Toggle as={Card.Header} eventKey="3">
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}><div>Third aliyah</div><div>Current highest bid: $54.00</div></div>
-        </Accordion.Toggle>
-        <Accordion.Collapse eventKey="3">
-          <Card.Body><div>Any needed details for third aliyah?</div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}><Button>Place bid</Button></div>
-          </Card.Body>
-        </Accordion.Collapse>
-      </Card>
-    </Accordion>;
-      break;
-    default:
-      pageToRender = null;
+  function onPlaceBidClick(biddingItem = {}, selectedDay = '') {
+    updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem, selectedDay });
   }
+
   return (
-    <div>
-      <Nav
-        activeKey={selectedTab}
-        onSelect={updateSelectedTab}
-        variant="tabs"
-        justify
-      >
-        <Nav.Item>
-          <Nav.Link eventKey="rh1">Rosh Hashanah Day 1</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="rh2">Rosh Hashanah Day 2</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="yk">Yom Kippur</Nav.Link>
-        </Nav.Item>
-      </Nav>
-      {pageToRender}
-    </div>
+    <>
+      {selectedTab !== undefined ?
+        <div>
+          <Nav
+            activeKey={selectedTab}
+            onSelect={updateSelectedTab}
+            variant="tabs"
+            fill
+          >
+            {data.map(({ key, title }) =>
+              <Nav.Item key={key}><Nav.Link eventKey={key}>{title}</Nav.Link></Nav.Item>)}
+          </Nav>
+          <BiddingTabContent data={data.find(({ key }) => key === selectedTab)} onPlaceBidClick={onPlaceBidClick} />
+        </div>
+        : <h1>Loading...</h1>}
+      {inputBidFormProps.show &&
+        <InputBidForm
+          show={inputBidFormProps.show}
+          onHide={() => { updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem: {}, selectedDay: '' }); }}
+          biddingItem={inputBidFormProps.biddingItem}
+          selectedDay={inputBidFormProps.selectedDay}
+        />}
+    </>
   );
 }
 
