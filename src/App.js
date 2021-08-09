@@ -1,8 +1,9 @@
 import './App.css';
-import { Nav } from 'react-bootstrap';
+import { Nav, Navbar } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import BiddingTabContent from './BiddingTabContent';
 import InputBidForm from './InputBidForm';
+import JRLCLogo from './JRLCLogo.png';
 
 function App() {
   const [selectedTab, updateSelectedTab] = useState(undefined);
@@ -47,11 +48,16 @@ function App() {
     <>
       {selectedTab !== undefined ?
         <div>
+          <Navbar bg="light">
+            <Navbar.Brand></Navbar.Brand>
+            <img src={JRLCLogo} alt="JRLC" />
+          </Navbar>
           <Nav
             activeKey={selectedTab}
             onSelect={updateSelectedTab}
-            variant="tabs"
+            variant="pills"
             fill
+            style={{ fontSize: 'larger', marginBottom: '12px' }}
           >
             {data.map(({ key, title }) =>
               <Nav.Item key={key}><Nav.Link eventKey={key}>{title}</Nav.Link></Nav.Item>)}
