@@ -5,11 +5,14 @@ function BiddingTabContent({ data, onPlaceBidClick }) {
     const [activeKey, updateActiveKey] = useState(null);
     useEffect(() => {
         const localActiveKey = localStorage.getItem(`${data.key}activeKey`);
+        console.log(localActiveKey)
         if (localActiveKey && data.biddingItems.find(({ aliyah }) => aliyah === localActiveKey)) {
             updateActiveKey(localActiveKey);
-        } else if (localActiveKey === null) {
+        } else if (localActiveKey !== 'null') {
             updateActiveKey(data.biddingItems[0].aliyah);
             localStorage.setItem(`${data.key}activeKey`, data.biddingItems[0].aliyah);
+        } else {
+            updateActiveKey(null);
         }
     }, [data.biddingItems, data.key]);
 

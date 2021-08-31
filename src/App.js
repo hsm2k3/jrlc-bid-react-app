@@ -29,9 +29,20 @@ function App() {
     updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem, selectedDay });
   }
 
-  async function onFetchData() {
+  async function onFetchDataAndRetreiveBiddingItem() {
+    let selectedBid = null;
     await axios.get('http://localhost:8000/api/bids')
-      .then(({ data }) => updateData(data));
+      .then(({ data }) => {
+        const selectedDayBiddingItems = data.find(({ key }) => String(key) === selectedTab)?.biddingItems;
+        if (selectedDayBiddingItems) {
+          selectedBid = selectedDayBiddingItems.find(({ aliyah }) => aliyah === inputBidFormProps.biddingItem.aliyah);
+          if (selectedBid) {
+            updateInputBidFormProps({ show: inputBidFormProps.show, biddingItem: selectedBid, selectedDay: inputBidFormProps.selectedDay });
+          }
+        }
+        updateData(data);
+      });
+      return selectedBid;
   }
 
   function onShowToast(header, body) {
@@ -68,11 +79,11 @@ function App() {
       {inputBidFormProps.show &&
         <InputBidForm
           show={inputBidFormProps.show}
-          onHide={() => { updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem: {}, selectedDay: '' }); }}
+          onHide={() => updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem: {}, selectedDay: '' })}
           biddingItem={inputBidFormProps.biddingItem}
           selectedDay={inputBidFormProps.selectedDay}
           selectedTab={selectedTab}
-          onFetchData={onFetchData}
+          onFetchDataAndRetreiveBiddingItem={onFetchDataAndRetreiveBiddingItem}
           onShowToast={onShowToast}
         />}
       <Toast

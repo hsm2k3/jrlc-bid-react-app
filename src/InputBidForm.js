@@ -22,7 +22,7 @@ function validatePhone(phone) {
     return false;
 }
 
-function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onFetchData, onShowToast }) {
+function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onFetchDataAndRetreiveBiddingItem, onShowToast }) {
     const [name, updateName] = useState('');
     const [designation, updateDesignation] = useState('');
     const [email, updateEmail] = useState('');
@@ -52,7 +52,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
 
     async function onPlaceBid() {
         updateSubmitting(true);
-        await onFetchData();
+        const biddingItemToValidate = await onFetchDataAndRetreiveBiddingItem() || biddingItem;
         const trimmedName = name.trim();
         const trimmedDesignation = designation.trim();
         const trimmedEmail = email.trim();
@@ -79,7 +79,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             validationFailed = true;
         }
         const numericBid = Math.floor(Number(trimmedBid));
-        if (isNaN(numericBid) || numericBid <= 0 || numericBid <= biddingItem.amount) {
+        if (isNaN(numericBid) || numericBid <= 0 || numericBid <= Number(biddingItemToValidate.amount)) {
             updateShowBidError(true);
             validationFailed = true;
         } else {
@@ -98,7 +98,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
         }
 
         await axios.post(`http://localhost:8000/api/bids/${selectedTab}/update`, {
-            aliyah: biddingItem.aliyah,
+            aliyah: biddingItemToValidate.aliyah,
             name: trimmedName,
             designation: trimmedDesignation,
             email: trimmedEmail,
@@ -110,9 +110,10 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
                 onHide();
                 onShowToast('Success', 'Thank you, your bid was successfully placed.');
             })
-            .catch(() => onShowToast('Error', 'Unfortunately, something went wrong and your bid may not have been placed. Please try again.'));
-
-        updateSubmitting(false);
+            .catch(() => {
+                updateSubmitting(false);
+                onShowToast('Error', 'Unfortunately, something went wrong and your bid may not have been placed. Please try again.');
+            });
     }
 
     return (
@@ -174,7 +175,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
                             Please enter any additional comments. Optional.
                         </Form.Text>
                     </Form.Group>
-                    <Form.Check id="remember" label="Remember my info" checked={remember} onClick={({ target }) => updateRemember(target.checked)} onChange={() => { }} disabled={submitting}/>
+                    <Form.Check id="remember" label="Remember my info" checked={remember} onClick={({ target }) => updateRemember(target.checked)} onChange={() => { }} disabled={submitting} />
                     <Form.Text className="text-muted">
                         If checked, the name, designation, email, and phone # will be remembered for future bids.
                     </Form.Text>
