@@ -5,7 +5,6 @@ function BiddingTabContent({ data, onPlaceBidClick }) {
     const [activeKey, updateActiveKey] = useState(null);
     useEffect(() => {
         const localActiveKey = localStorage.getItem(`${data.key}activeKey`);
-        console.log(localActiveKey)
         if (localActiveKey && data.biddingItems.find(({ aliyah }) => aliyah === localActiveKey)) {
             updateActiveKey(localActiveKey);
         } else if (localActiveKey !== 'null') {
