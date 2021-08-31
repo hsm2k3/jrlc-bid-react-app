@@ -22,7 +22,7 @@ function validatePhone(phone) {
     return false;
 }
 
-function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onFetchDataAndRetreiveBiddingItem, onShowToast }) {
+function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onFetchDataAndRetreiveBiddingItem, onShowToast, onFetchData }) {
     const [name, updateName] = useState('');
     const [designation, updateDesignation] = useState('');
     const [email, updateEmail] = useState('');
@@ -37,6 +37,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
     const [submitting, updateSubmitting] = useState(false);
 
     useEffect(() => {
+        onFetchDataAndRetreiveBiddingItem();
         document.getElementById('name')?.focus();
         let localBidFormInfo = localStorage.getItem('bidFormInfo');
         if (localBidFormInfo) {
@@ -48,7 +49,11 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             updateRemember(true);
             document.getElementById('bid')?.focus();
         }
-    }, []);
+
+        return () => {
+            onFetchData();
+        }
+    }, [onFetchDataAndRetreiveBiddingItem, onFetchData]);
 
     async function onPlaceBid() {
         updateSubmitting(true);
@@ -106,7 +111,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             bid: numericBid,
             comments: trimmedComments
         })
-            .then(() => {
+            .then(() => {              
                 onHide();
                 onShowToast('Success', 'Thank you, your bid was successfully placed.');
             })

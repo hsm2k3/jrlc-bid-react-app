@@ -1,6 +1,6 @@
 import './App.css';
 import { Nav, Navbar, Spinner, Toast } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import BiddingTabContent from './BiddingTabContent';
 import InputBidForm from './InputBidForm';
 import JRLCLogo from './JRLCLogo.png';
@@ -11,6 +11,7 @@ function App() {
   const [inputBidFormProps, updateInputBidFormProps] = useState({ show: false, biddingItem: {}, selectedDay: '' });
   const [toastProps, updateToastProps] = useState({ show: false, header: '', body: '' });
   const [data, updateData] = useState([]);
+  
   useEffect(() => {
     axios.get('http://localhost:8000/api/bids')
       .then(({ data }) => {
@@ -29,7 +30,7 @@ function App() {
     updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem, selectedDay });
   }
 
-  async function onFetchDataAndRetreiveBiddingItem() {
+  const onFetchDataAndRetreiveBiddingItem = useCallback(async () => {
     let selectedBid = null;
     await axios.get('http://localhost:8000/api/bids')
       .then(({ data }) => {
@@ -38,16 +39,21 @@ function App() {
         if (selectedDayBiddingItems) {
           selectedBid = selectedDayBiddingItems.find(({ aliyah }) => aliyah === inputBidFormProps.biddingItem.aliyah);
           if (selectedBid) {
-            updateInputBidFormProps({ show: inputBidFormProps.show, biddingItem: selectedBid, selectedDay: inputBidFormProps.selectedDay });
+            updateInputBidFormProps(currentInputBidFormProps => ({ show: currentInputBidFormProps.show, biddingItem: selectedBid, selectedDay: currentInputBidFormProps.selectedDay }));
           }
         }
       });
-      return selectedBid;
-  }
+    return selectedBid;
+  }, [inputBidFormProps.biddingItem.aliyah, selectedTab]);
 
   function onShowToast(header, body) {
     updateToastProps({ show: true, header, body });
   }
+
+  const onFetchData = useCallback(() => {
+    axios.get('http://localhost:8000/api/bids')
+      .then(({ data }) => updateData(data));
+  }, [])
 
   return (
     <>
@@ -85,6 +91,7 @@ function App() {
           selectedTab={selectedTab}
           onFetchDataAndRetreiveBiddingItem={onFetchDataAndRetreiveBiddingItem}
           onShowToast={onShowToast}
+          onFetchData={onFetchData}
         />}
       <Toast
         style={{
