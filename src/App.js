@@ -1,77 +1,96 @@
 import './App.css';
-import { Nav, Navbar } from 'react-bootstrap';
+import { Nav, Navbar, Spinner, Toast } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import BiddingTabContent from './BiddingTabContent';
 import InputBidForm from './InputBidForm';
 import JRLCLogo from './JRLCLogo.png';
+import axios from 'axios';
 
 function App() {
   const [selectedTab, updateSelectedTab] = useState(undefined);
   const [inputBidFormProps, updateInputBidFormProps] = useState({ show: false, biddingItem: {}, selectedDay: '' });
+  const [toastProps, updateToastProps] = useState({ show: false, header: '', body: '' });
   const [data, updateData] = useState([]);
   useEffect(() => {
-    const returnedData = [
-      {
-        key: 'rh1', title: 'Rosh Hashanah Day 1', biddingItems: [
-          { key: 'rh1-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 10, details: 'Any details for opening the ark?' },
-          { key: 'rh1-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 20, details: 'Any details for the first aliyah?' },
-          { key: 'rh1-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 30, details: 'Any details for the second aliyah?' },
-          { key: 'rh1-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 40, details: 'Any details for the third aliyah?' },
-        ]
-      },
-      {
-        key: 'rh2', title: 'Rosh Hashanah Day 2', biddingItems: [
-          { key: 'rh2-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 40, details: 'Any details for opening the ark?' },
-          { key: 'rh2-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 30, details: 'Any details for the first aliyah?' },
-          { key: 'rh2-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 20, details: 'Any details for the second aliyah?' },
-          { key: 'rh2-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 10, details: 'Any details for the third aliyah?' },
-        ]
-      },
-      {
-        key: 'yk', title: 'Yom Kippur', biddingItems: [
-          { key: 'yk-1', title: 'Shaharis (morning prayers) - Opening the ark', highestBid: 10, details: 'Any details for opening the ark?' },
-          { key: 'yk-2', title: 'Shaharis (morning prayers) - First aliyah', highestBid: 40, details: 'Any details for the first aliyah?' },
-          { key: 'yk-3', title: 'Shaharis (morning prayers) - Second aliyah', highestBid: 20, details: 'Any details for the second aliyah?' },
-          { key: 'yk-4', title: 'Shaharis (morning prayers) - Third aliyah', highestBid: 30, details: 'Any details for the third aliyah?' },
-        ]
-      },
-    ]
-    updateData(returnedData)
-    updateSelectedTab(returnedData[0]?.key);
+    axios.get('http://localhost:8000/api/bids')
+      .then(({ data }) => {
+        updateData(data);
+        const localSelectedTab = localStorage.getItem('selectedTabKey');
+        if (localSelectedTab && data.find(({ key }) => String(key) === localSelectedTab)) {
+          updateSelectedTab(localSelectedTab);
+        } else {
+          localStorage.setItem('selectedTabKey', data[0]?.key);
+          updateSelectedTab(data[0]?.key);
+        }
+      });
   }, []);
 
   function onPlaceBidClick(biddingItem = {}, selectedDay = '') {
     updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem, selectedDay });
   }
 
+  async function onFetchData() {
+    await axios.get('http://localhost:8000/api/bids')
+      .then(({ data }) => updateData(data));
+  }
+
+  function onShowToast(header, body) {
+    updateToastProps({ show: true, header, body });
+  }
+
   return (
     <>
+      <Navbar bg="light">
+        <Navbar.Brand></Navbar.Brand>
+        <img src={JRLCLogo} alt="JRLC" />
+      </Navbar>
       {selectedTab !== undefined ?
-        <div>
-          <Navbar bg="light">
-            <Navbar.Brand></Navbar.Brand>
-            <img src={JRLCLogo} alt="JRLC" />
-          </Navbar>
+        <>
           <Nav
             activeKey={selectedTab}
-            onSelect={updateSelectedTab}
+            onSelect={key => { localStorage.setItem('selectedTabKey', key); updateSelectedTab(key); }}
             variant="pills"
             fill
-            style={{ fontSize: 'larger', marginBottom: '12px' }}
+            style={{ fontSize: 'larger' }}
           >
             {data.map(({ key, title }) =>
               <Nav.Item key={key}><Nav.Link eventKey={key}>{title}</Nav.Link></Nav.Item>)}
           </Nav>
-          <BiddingTabContent data={data.find(({ key }) => key === selectedTab)} onPlaceBidClick={onPlaceBidClick} />
+          <BiddingTabContent data={data.find(({ key }) => String(key) === selectedTab)} onPlaceBidClick={onPlaceBidClick} />
+        </>
+        :
+        <div style={{ position: 'absolute', top: '50%', left: '50%' }}>
+          <Spinner animation="border" variant="primary">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
         </div>
-        : <h1>Loading...</h1>}
+      }
       {inputBidFormProps.show &&
         <InputBidForm
           show={inputBidFormProps.show}
           onHide={() => { updateInputBidFormProps({ show: !inputBidFormProps.show, biddingItem: {}, selectedDay: '' }); }}
           biddingItem={inputBidFormProps.biddingItem}
           selectedDay={inputBidFormProps.selectedDay}
+          selectedTab={selectedTab}
+          onFetchData={onFetchData}
+          onShowToast={onShowToast}
         />}
+      <Toast
+        style={{
+          position: 'fixed',
+          top: 15,
+          right: 10,
+        }}
+        onClose={() => updateToastProps({ show: false, header: '', body: '' })}
+        show={toastProps.show}
+        delay={5000}
+        autohide
+      >
+        <Toast.Header>
+          <strong className="mr-auto">{toastProps.header}</strong>
+        </Toast.Header>
+        <Toast.Body>{toastProps.body}</Toast.Body>
+      </Toast>
     </>
   );
 }
