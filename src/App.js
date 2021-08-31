@@ -33,6 +33,7 @@ function App() {
     let selectedBid = null;
     await axios.get('http://localhost:8000/api/bids')
       .then(({ data }) => {
+        updateData(data);
         const selectedDayBiddingItems = data.find(({ key }) => String(key) === selectedTab)?.biddingItems;
         if (selectedDayBiddingItems) {
           selectedBid = selectedDayBiddingItems.find(({ aliyah }) => aliyah === inputBidFormProps.biddingItem.aliyah);
@@ -40,7 +41,6 @@ function App() {
             updateInputBidFormProps({ show: inputBidFormProps.show, biddingItem: selectedBid, selectedDay: inputBidFormProps.selectedDay });
           }
         }
-        updateData(data);
       });
       return selectedBid;
   }
@@ -67,7 +67,7 @@ function App() {
             {data.map(({ key, title }) =>
               <Nav.Item key={key}><Nav.Link eventKey={key}>{title}</Nav.Link></Nav.Item>)}
           </Nav>
-          <BiddingTabContent data={data.find(({ key }) => String(key) === selectedTab)} onPlaceBidClick={onPlaceBidClick} />
+          <BiddingTabContent data={data.find(({ key }) => String(key) === String(selectedTab))} onPlaceBidClick={onPlaceBidClick} />
         </>
         :
         <div style={{ position: 'absolute', top: '50%', left: '50%' }}>
