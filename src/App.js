@@ -11,7 +11,7 @@ function App() {
   const [inputBidFormProps, updateInputBidFormProps] = useState({ show: false, biddingItem: {}, selectedDay: '' });
   const [toastProps, updateToastProps] = useState({ show: false, header: '', body: '' });
   const [data, updateData] = useState([]);
-  
+
   useEffect(() => {
     axios.get('http://localhost:8000/api/bids')
       .then(({ data }) => {
@@ -23,7 +23,8 @@ function App() {
           localStorage.setItem('selectedTabKey', data[0]?.key);
           updateSelectedTab(data[0]?.key);
         }
-      });
+      })
+      .catch(() => { onShowToast('Error', 'Could not load data, please try again later.') });
   }, []);
 
   function onPlaceBidClick(biddingItem = {}, selectedDay = '') {
@@ -52,7 +53,8 @@ function App() {
 
   const onFetchData = useCallback(() => {
     axios.get('http://localhost:8000/api/bids')
-      .then(({ data }) => updateData(data));
+      .then(({ data }) => updateData(data))
+      .catch(() => { onShowToast('Error', 'There was an error getting the latest data, please try again later.') });
   }, [])
 
   return (
