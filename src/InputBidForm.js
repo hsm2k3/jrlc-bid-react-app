@@ -102,14 +102,14 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             localStorage.removeItem('bidFormInfo');
         }
 
-        await axios.post(`http://localhost:8000/api/bids/${selectedTab}/update`, {
+        await axios.post(`http://localhost:8000/api/bids/${selectedTab}/create`, {
             aliyah: biddingItemToValidate.aliyah,
             name: trimmedName,
             designation: trimmedDesignation,
             email: trimmedEmail,
             phone: trimmedPhone,
-            bid: numericBid,
-            comments: trimmedComments
+            amount: numericBid,
+            comment: trimmedComments
         })
             .then(() => {              
                 onHide();
