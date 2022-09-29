@@ -4,7 +4,7 @@ import { Button, Form, InputGroup, Modal, Spinner } from "react-bootstrap";
 
 //Taken from https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
 function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
 //Taken from https://stackoverflow.com/questions/18375929/validate-phone-number-using-javascript
@@ -14,12 +14,9 @@ function validatePhone(phone) {
         return true;
     }
     const numPhone = Number(phone);
-    if (!isNaN(numPhone) &&
-        (numPhone.toString().length === 10 || (numPhone.toString().length === 11 && numPhone.toString().charAt(0) === '1'))
-    ) {
-        return true;
-    }
-    return false;
+    return !isNaN(numPhone) &&
+        (numPhone.toString().length === 10 || (numPhone.toString().length === 11 && numPhone.toString().charAt(0) === '1'));
+
 }
 
 function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onFetchDataAndRetreiveBiddingItem, onShowToast, onFetchData }) {
@@ -35,6 +32,8 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
     const [showBidError, updateShowBidError] = useState(false);
     const [remember, updateRemember] = useState(false);
     const [submitting, updateSubmitting] = useState(false);
+
+    const domain = process.env.REACT_APP_DOMAIN;
 
     useEffect(() => {
         onFetchDataAndRetreiveBiddingItem();
@@ -102,7 +101,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             localStorage.removeItem('bidFormInfo');
         }
 
-        await axios.post(`http://localhost:8000/api/bids/${selectedTab}/create`, {
+        await axios.post(`${domain}/api/bids/${selectedTab}/create`, {
             aliyah: biddingItemToValidate.aliyah,
             name: trimmedName,
             designation: trimmedDesignation,
@@ -111,7 +110,7 @@ function InputBidForm({ show, onHide, biddingItem, selectedDay, selectedTab, onF
             amount: numericBid,
             comment: trimmedComments
         })
-            .then(() => {              
+            .then(() => {
                 onHide();
                 onShowToast('Success', 'Thank you, your bid was successfully placed.');
             })

@@ -11,9 +11,10 @@ function App() {
   const [inputBidFormProps, updateInputBidFormProps] = useState({ show: false, biddingItem: {}, selectedDay: '' });
   const [toastProps, updateToastProps] = useState({ show: false, header: '', body: '' });
   const [data, updateData] = useState([]);
+  const domain = process.env.REACT_APP_DOMAIN;
 
   useEffect(() => {
-    axios.get('http://localhost:8000/api/bids')
+    axios.get(`${domain}/api/bids`)
       .then(({ data }) => {
         updateData(data);
         const localSelectedTab = localStorage.getItem('selectedTabKey');
@@ -33,7 +34,7 @@ function App() {
 
   const onFetchDataAndRetreiveBiddingItem = useCallback(async () => {
     let selectedBid = null;
-    await axios.get('http://localhost:8000/api/bids')
+    await axios.get(`${domain}/api/bids`)
       .then(({ data }) => {
         updateData(data);
         const selectedDayBiddingItems = data.find(({ key }) => String(key) === selectedTab)?.biddingItems;
@@ -52,7 +53,7 @@ function App() {
   }
 
   const onFetchData = useCallback(() => {
-    axios.get('http://localhost:8000/api/bids')
+    axios.get(`${domain}/api/bids`)
       .then(({ data }) => updateData(data))
       .catch(() => { onShowToast('Error', 'There was an error getting the latest data, please try again later.') });
   }, [])
